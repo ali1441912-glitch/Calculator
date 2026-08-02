@@ -1,0 +1,30 @@
+name: Build APK
+
+# This workflow runs automatically every time you push code to GitHub.
+# It builds the Android APK in the cloud (no need to install anything
+# on your own phone/computer) and lets you download the finished file.
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:   # also allows manually clicking "Run workflow" on GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build APK with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          command: buildozer android debug
+          buildozer_version: stable
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator-apk
+          path: ${{ steps.buildozer.outputs.filename }}
